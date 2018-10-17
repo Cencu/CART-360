@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+int x, y,z;
+>>>>>>> 3de3a4756c68957ffa833bf542f229200a299cd2
 
 const int groundpin = 18;             // analog input pin 4 -- ground
 const int powerpin = 19;              // analog input pin 5 -- voltage
@@ -19,6 +23,7 @@ void setup() {
   digitalWrite(powerpin, HIGH);
 }
 
+<<<<<<< HEAD
 void loop() {
   // print the sensor values:
   Serial.print(analogRead(xpin));
@@ -31,4 +36,19 @@ void loop() {
   Serial.println();
   // delay before next reading:
   delay(100);
+=======
+void loop()
+{
+  x = analogRead(0);
+  y = analogRead(1);
+  z = analogRead(2);
+  Serial.print(x,DEC);
+  Serial.print(" ");
+  Serial.print(y,DEC);
+  Serial.print(" ");
+  Serial.print(z,DEC);
+  Serial.println(" ");
+  delay(100);
+  
+>>>>>>> 3de3a4756c68957ffa833bf542f229200a299cd2
 }
