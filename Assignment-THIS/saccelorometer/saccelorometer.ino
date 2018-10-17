@@ -1,6 +1,4 @@
-const int xPin = A0;
-const int yPin = A2;
-const int zPin = A1;
+int x, y,z;
 
 void setup()
 {
@@ -9,14 +7,15 @@ void setup()
 
 void loop()
 {
-  xPin = analogRead(0);       // read analog input pin 0
-  yPin = analogRead(2);       // read analog input pin 1
-  zPin = analogRead(1);       // read analog input pin 1
-  Serial.print("accelerations are x, y, z: ");
-  Serial.print(xPin, DEC);    // print the acceleration in the X axis
-  Serial.print(" ");       // prints a space between the numbers
-  Serial.print(yPin, DEC);    // print the acceleration in the Y axis
-  Serial.print(" ");       // prints a space between the numbers
-  Serial.println(zPin, DEC);  // print the acceleration in the Z axis
-  delay(100);              // wait 100ms for next reading
+  x = analogRead(0);
+  y = analogRead(1);
+  z = analogRead(2);
+  Serial.print(x,DEC);
+  Serial.print(" ");
+  Serial.print(y,DEC);
+  Serial.print(" ");
+  Serial.print(z,DEC);
+  Serial.println(" ");
+  delay(100);
+  
 }
