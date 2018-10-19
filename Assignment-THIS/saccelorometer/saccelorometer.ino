@@ -102,7 +102,7 @@ soundX = map(currentEstX, leftX+20, rightX-20, 0, 8);
 durationY = map(currentEstY, frontY-20, backY+20, 0, 5);
 switchZ = map(currentEstZ, upZ, downZ, 10, 0);
 delay(10);
- //Print the averaged readings of the accelerometer to the monitor
+// Print the averaged readings of the accelerometer to the monitor
 //  Serial.print("x ");
 //  Serial.print(currentEstX,DEC);
 //  Serial.print(" y ");
@@ -123,7 +123,7 @@ void musicHandler(){
   {
     if (switchZState != prevSwitchZState)
     {
-      delay(300);
+      delay(500);
       switchZState = ! switchZState;
       prevSwitchZState = switchZState;
     }
@@ -135,11 +135,11 @@ void musicHandler(){
   }
 
  //if value of X is less or equal to the peak on the left plus 10 then switch its state
- if (currentEstX <= leftX+10)
+ if (currentEstX >= leftX-10)
   {
     if (switchXState != prevSwitchXState)
     {
-      delay(200);
+      delay(100);
       switchXState = ! switchXState;
       prevSwitchXState = switchXState;
     }
@@ -151,11 +151,11 @@ void musicHandler(){
   }
 
   //if value of Y is less or equal to the peak on the back plus 10 then switch its state
- if (currentEstY <= backY+10)
+ if (currentEstY >= backY-10)
   {
     if (switchYState != prevSwitchYState)
     {
-      delay(200);
+      delay(100);
       switchYState = ! switchYState;
       prevSwitchYState = switchYState;
     }
