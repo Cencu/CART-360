@@ -12,9 +12,9 @@
 //define the pins for the button and the main speaker
 #define CENTRAL_SPEAKER 11
 
-#define RGBR 5
-#define RGBB 6
-#define RGBG 9
+//#define RGBR 5
+//#define RGBB 6
+//#define RGBG 9
 
 
 
@@ -114,7 +114,7 @@ void accHandling(){
 soundX = map(currentEstX, leftX-20, rightX+20, 0, 8);
 durationY = map(currentEstY, frontY+20, backY-20, 0, 5);
 switchZ = map(currentEstZ, upZ, downZ, 10, 0);
-delay(1);
+delay(10);
  //Print the averaged readings of the accelerometer to the monitor
 //  Serial.print("x ");
 //  Serial.print(currentEstX,DEC);
@@ -193,9 +193,9 @@ void musicHandler(){
     //if the state of X is false then turn on key Eb  
     if(switchXState == false){
 
-      analogWrite(RGBR, 0);
-      analogWrite(RGBG, 0);
-      analogWrite(RGBB, 255);
+//      analogWrite(RGBR, 0);
+//      analogWrite(RGBG, 0);
+//      analogWrite(RGBB, 255);
       tone(CENTRAL_SPEAKER, keyEb[soundX], noteDuration[durationY]);
       delay(noteDuration[durationY]*1.3);
 
@@ -205,9 +205,9 @@ void musicHandler(){
     // else if the state of Y is false then turn on key A 
     else if (switchYState == false){
 
-      analogWrite(RGBG, 0);
-      analogWrite(RGBB, 0);
-      analogWrite(RGBR, 255);
+//      analogWrite(RGBG, 0);
+//      analogWrite(RGBB, 0);
+//      analogWrite(RGBR, 255);
       
       tone(CENTRAL_SPEAKER, keyA[soundX], noteDuration[durationY]);
       delay(noteDuration[durationY]*1.3);
@@ -218,9 +218,9 @@ void musicHandler(){
       // set key C by default
       else {
 
-        analogWrite(RGBB, 0);
-        analogWrite(RGBR, 0);
-        analogWrite(RGBG, 255);
+//        analogWrite(RGBB, 0);
+//        analogWrite(RGBR, 0);
+//        analogWrite(RGBG, 255);
         tone(CENTRAL_SPEAKER, keyC[soundX], noteDuration[durationY]);
         delay(noteDuration[durationY]*1.3);
         
@@ -233,9 +233,9 @@ void musicHandler(){
   {
  
     noTone(CENTRAL_SPEAKER);
-      analogWrite(RGBB, 0);
-      analogWrite(RGBG, 0);
-      analogWrite(RGBR, 0);
+//      analogWrite(RGBB, 0);
+//      analogWrite(RGBG, 0);
+//      analogWrite(RGBR, 0);
   }
   
   }
