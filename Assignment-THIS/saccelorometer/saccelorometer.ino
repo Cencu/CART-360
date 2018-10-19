@@ -1,4 +1,10 @@
 
+//The Maestron by Sebastian Beltran and Chris Cenci
+//The Maestron is a piece that explores the composition of music through movement.  
+//It was inspired by the performance of classical music where the Maestron conducst his orchestra with their baton.
+//Similarly, the Maestron is a circuit that simulates a Baton and the music is played as the user moves it.
+//In that sense the user is the Maestro of its own little 8-bit single tone performance.
+
 //include external file where the notes are defined
 //taken from Etude 3 template
 #include "pitches.h"
@@ -30,23 +36,25 @@ float prevEstX = 0.0;
 float prevEstY = 0.0;
 float prevEstZ = 0.0;
 
+
+
 //get current values of the axis
 float currentEstX;
 float currentEstY;
 float currentEstZ;
 
 //tresshold readings of all axis readings (center of accelerometer)
-int tresholdX = 355;
-int tresholdY = 280;
-int tresholdZ = 371;
+int tresholdX = 345;
+int tresholdY = 351;
+int tresholdZ = 445;
 
 //peak opposites for each axis
-int leftX = 420;
-int rightX = 300;
-int frontY = 280;
-int backY = 327;
-int upZ = 596;
-int downZ = 303;
+int leftX = 415;
+int rightX = 280;
+int frontY = 304;
+int backY = 415;
+int upZ = 445;
+int downZ = 337;
 
 //declare the variables that will be mapped and finally used to generate the sounds
 int soundX;
@@ -103,18 +111,18 @@ void accHandling(){
  prevEstZ= currentEstZ;
 
 //define the variables that will change the behavior of the speaker
-soundX = map(currentEstX, leftX+20, rightX-20, 0, 8);
-durationY = map(currentEstY, frontY-20, backY+20, 0, 5);
+soundX = map(currentEstX, leftX-20, rightX+20, 0, 8);
+durationY = map(currentEstY, frontY+20, backY-20, 0, 5);
 switchZ = map(currentEstZ, upZ, downZ, 10, 0);
-delay(10);
+delay(1);
  //Print the averaged readings of the accelerometer to the monitor
 //  Serial.print("x ");
 //  Serial.print(currentEstX,DEC);
 //  Serial.print(" y ");
 //  Serial.print(currentEstY,DEC);
 //  Serial.print(" z ");
-//  Serial.println(currentEstZ,DEC);
-//  delay(1000);
+//Serial.println(currentEstZ,DEC);
+//  delay(500);
   
   
   
@@ -124,13 +132,14 @@ delay(10);
 void musicHandler(){
 
   //if value mapped to Z is less than 2 then switch its state
-    if (switchZ <2)
+    if (switchZ <3)
   {
     if (switchZState != prevSwitchZState)
     {
       delay(700);
       switchZState = ! switchZState;
       prevSwitchZState = switchZState;
+      
     }
 
   }
@@ -159,7 +168,7 @@ void musicHandler(){
   }
 
   //if value of Y is less or equal to the peak on the back plus 10 then switch its state
- if (currentEstY >= backY-5)
+ if (currentEstY >= backY-10)
   {
     if (switchYState != prevSwitchYState)
     {
@@ -189,7 +198,7 @@ void musicHandler(){
       analogWrite(RGBB, 255);
       tone(CENTRAL_SPEAKER, keyEb[soundX], noteDuration[durationY]);
       delay(noteDuration[durationY]*1.3);
-      //Serial.println(currentEstX);
+
 
       
     } 
@@ -202,7 +211,7 @@ void musicHandler(){
       
       tone(CENTRAL_SPEAKER, keyA[soundX], noteDuration[durationY]);
       delay(noteDuration[durationY]*1.3);
-      //Serial.println(currentEstZ);
+
       
       } 
 
