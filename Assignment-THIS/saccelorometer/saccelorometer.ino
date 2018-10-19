@@ -24,6 +24,10 @@ float prevEstX = 0.0;
 float prevEstY = 0.0;
 float prevEstZ = 0.0;
 
+float currentEstX;
+float currentEstY;
+float currentEstZ;
+
 //tresshold readings of all axis readings (center of accelerometer)
 int tresholdX = 350;
 int tresholdY = 354;
@@ -43,8 +47,15 @@ int durationY;
 int switchZ;
 
 //define button states
-boolean switchState = false;
-boolean prevSwitchState = true;
+boolean switchZState = false;
+boolean prevSwitchZState = true;
+
+boolean switchYState = false;
+boolean prevSwitchYState = true;
+
+boolean switchXState = false;
+boolean prevSwitchXState = true;
+
 
 void setup() {
   
@@ -59,36 +70,7 @@ void loop()
 {
 
   accHandling();
-
-
-  if (switchZ <2)
-  {
-    if (switchState != prevSwitchState)
-    {
-      delay(300);
-      switchState = ! switchState;
-      prevSwitchState = switchState;
-    }
-
-  }
-  else
-  {
-    prevSwitchState = !switchState;
-  }
-
-  
-  if (switchState == false)
-  {
-    
-      tone(CENTRAL_SPEAKER, keyA[soundX], noteDuration[durationY]);
-      delay(noteDuration[durationY]*1.3);
-    } 
-
-  else
-  {
- 
-    noTone(CENTRAL_SPEAKER);
-  }
+  musicHandler();
 
 
 }
@@ -105,9 +87,9 @@ void accHandling(){
 
  // filter the sensor's result:
  //passing the results for a weighted average
- float currentEstX = filter(x, weight, prevEstX);
- float currentEstY = filter(y, weight, prevEstY);
- float currentEstZ = filter(z, weight, prevEstZ);
+ currentEstX = filter(x, weight, prevEstX);
+ currentEstY = filter(y, weight, prevEstY);
+ currentEstZ = filter(z, weight, prevEstZ);
  
  //save current state for future use
  prevEstX= currentEstX;
@@ -115,7 +97,7 @@ void accHandling(){
  prevEstZ= currentEstZ;
 
 soundX = map(currentEstX, leftX+20, rightX-20, 0, 8);
-durationY = map(currentEstY, frontY, backY, 0, 5);
+durationY = map(currentEstY, frontY-20, backY+20, 0, 5);
 switchZ = map(currentEstZ, upZ, downZ, 10, 0);
 delay(10);
  //Print the averaged readings of the accelerometer to the monitor
@@ -130,6 +112,81 @@ delay(10);
   
   
   }
+
+void musicHandler(){
+  
+    if (switchZ <2)
+  {
+    if (switchZState != prevSwitchZState)
+    {
+      delay(300);
+      switchZState = ! switchZState;
+      prevSwitchZState = switchZState;
+    }
+
+  }
+  else
+  {
+    prevSwitchZState = !switchZState;
+  }
+
+ if (currentEstX <= leftX+10)
+  {
+    if (switchXState != prevSwitchXState)
+    {
+      delay(200);
+      switchXState = ! switchXState;
+      prevSwitchXState = switchXState;
+    }
+
+  }
+  else
+  {
+    prevSwitchXState = !switchXState;
+  }
+
+  
+ if (currentEstY <= backY+10)
+  {
+    if (switchYState != prevSwitchYState)
+    {
+      delay(200);
+      switchYState = ! switchYState;
+      prevSwitchYState = switchYState;
+    }
+
+  }
+  else
+  {
+    prevSwitchYState = !switchYState;
+  }
+
+  
+  if (switchZState == false)
+  {   
+    if(switchXState == true){
+  
+      tone(CENTRAL_SPEAKER, keyEb[soundX], noteDuration[durationY]);
+      delay(noteDuration[durationY]*1.3);
+    } else if (switchXState == true){
+      tone(CENTRAL_SPEAKER, keyA[soundX], noteDuration[durationY]);
+      delay(noteDuration[durationY]*1.3);
+      
+      } else {
+        tone(CENTRAL_SPEAKER, keyC[soundX], noteDuration[durationY]);
+        delay(noteDuration[durationY]*1.3);
+        
+      }
+    
+  }
+
+  else
+  {
+ 
+    noTone(CENTRAL_SPEAKER);
+  }
+  
+  }
   
 //filter function averaging raw readings from the sensor
 //(code taken from the class slides - Weighted Average Section)
@@ -137,3 +194,5 @@ float filter (float rawValue, float w, float lastValue) {
  float result = w * rawValue + (1.0-w)*lastValue; 
  return result;
 }
+
+
