@@ -20,12 +20,17 @@ int tresholdY = 354;
 int tresholdZ = 447;
 
 //peak opposites for each axis
-int leftX = 280;
-int rightX = 420;
-int frontY = 425;
-int backY = 274;
+int leftX = 420;
+int rightX = 280;
+int frontY = 274;
+int backY = 425;
 int upZ = 447;
 int downZ = 303;
+
+//declare the variables that will be mapped and finally used to generate the sounds
+int soundX;
+int soundY;
+int switchZ;
 
 //define button states
 boolean buttonState = false;
@@ -59,6 +64,8 @@ void loop()
  prevEstY= currentEstY;
  prevEstZ= currentEstZ;
 
+soundX = map(currentEstX, leftX, rightX, 0, 10);
+
  //Print the averaged readings of the accelerometer to the monitor
   Serial.print("x ");
   Serial.print(currentEstX,DEC);
@@ -87,18 +94,18 @@ void loop()
   }
 
   
-//  if (buttonState == true)
-//  {
-//    
-//      tone(bigSpeaker, currentX * 10, 1000);
-//           //delay(100);
-//    } 
-//
-//  else
-//  {
-// 
-//    noTone(bigSpeaker);
-//  }
+  if (buttonState == true)
+  {
+    
+      tone(CENTRAL_SPEAKER, soundX*100, 1000);
+           //delay(100);
+    } 
+
+  else
+  {
+ 
+    noTone(CENTRAL_SPEAKER);
+  }
 
 
 }
