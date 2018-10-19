@@ -3,7 +3,7 @@
 //taken from Etude 3 template
 #include "pitches.h"
 
-int keyC [] = {NOTE_C5, NOTE_D5, NOTE_E5, NOTE_F5, NOTE_G5, NOTE_A5, NOTE_B5};
+int keyC [] = {NOTE_C5, NOTE_D5, NOTE_E5, NOTE_F5, NOTE_G5, NOTE_A5, NOTE_B5, NOTE_C6};
 
 //define the pins for the button and the main speaker
 #define BUTTON_PIN 2
@@ -39,8 +39,8 @@ int soundY;
 int switchZ;
 
 //define button states
-boolean buttonState = false;
-boolean prevButtonState = true;
+boolean switchState = false;
+boolean prevSwitchState = true;
 
 void setup() {
   
@@ -70,41 +70,42 @@ void loop()
  prevEstY= currentEstY;
  prevEstZ= currentEstZ;
 
-soundX = map(currentEstX, leftX, rightX, 0, 6);
-
+soundX = map(currentEstX, leftX, rightX, 0, 7);
+switchZ = map(currentEstZ, upZ, downZ, 10, 0);
+delay(10);
  //Print the averaged readings of the accelerometer to the monitor
-  Serial.print("x ");
-  Serial.print(currentEstX,DEC);
-  Serial.print(" y ");
-  Serial.print(currentEstY,DEC);
-  Serial.print(" z ");
-  Serial.println(currentEstZ,DEC);
-  delay(500);
+//  Serial.print("x ");
+//  Serial.print(currentEstX,DEC);
+//  Serial.print(" y ");
+//  Serial.print(currentEstY,DEC);
+//  Serial.print(" z ");
+//  Serial.println(currentEstZ,DEC);
+//  delay(100);
 
  //read button value abd switch its state
-  int buttonValue = digitalRead(BUTTON_PIN);
+  //int buttonValue = digitalRead(BUTTON_PIN);
 
-  if (buttonValue == HIGH)
+  if (switchZ <2)
   {
-    if (buttonState != prevButtonState)
+    if (switchState != prevSwitchState)
     {
-      delay(100);
-      buttonState = ! buttonState;
-      prevButtonState = buttonState;
+      delay(300);
+      switchState = ! switchState;
+      prevSwitchState = switchState;
     }
 
   }
   else
   {
-    prevButtonState = !buttonState;
+    prevSwitchState = !switchState;
   }
 
   
-  if (buttonState == true)
+  if (switchState == false)
   {
     
       tone(CENTRAL_SPEAKER, keyC[soundX], 1000);
-           //delay(100);
+      delay(1300);
     } 
 
   else
