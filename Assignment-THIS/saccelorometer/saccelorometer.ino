@@ -36,16 +36,16 @@ float currentEstY;
 float currentEstZ;
 
 //tresshold readings of all axis readings (center of accelerometer)
-int tresholdX = 350;
-int tresholdY = 354;
-int tresholdZ = 447;
+int tresholdX = 355;
+int tresholdY = 280;
+int tresholdZ = 371;
 
 //peak opposites for each axis
 int leftX = 420;
-int rightX = 280;
-int frontY = 274;
-int backY = 425;
-int upZ = 447;
+int rightX = 300;
+int frontY = 280;
+int backY = 327;
+int upZ = 596;
 int downZ = 303;
 
 //declare the variables that will be mapped and finally used to generate the sounds
@@ -107,14 +107,14 @@ soundX = map(currentEstX, leftX+20, rightX-20, 0, 8);
 durationY = map(currentEstY, frontY-20, backY+20, 0, 5);
 switchZ = map(currentEstZ, upZ, downZ, 10, 0);
 delay(10);
-// Print the averaged readings of the accelerometer to the monitor
+ //Print the averaged readings of the accelerometer to the monitor
 //  Serial.print("x ");
 //  Serial.print(currentEstX,DEC);
 //  Serial.print(" y ");
 //  Serial.print(currentEstY,DEC);
 //  Serial.print(" z ");
 //  Serial.println(currentEstZ,DEC);
-//  delay(100);
+//  delay(1000);
   
   
   
@@ -159,7 +159,7 @@ void musicHandler(){
   }
 
   //if value of Y is less or equal to the peak on the back plus 10 then switch its state
- if (currentEstY >= backY-10)
+ if (currentEstY >= backY-5)
   {
     if (switchYState != prevSwitchYState)
     {
@@ -189,7 +189,7 @@ void musicHandler(){
       analogWrite(RGBB, 255);
       tone(CENTRAL_SPEAKER, keyEb[soundX], noteDuration[durationY]);
       delay(noteDuration[durationY]*1.3);
-      Serial.println(currentEstX);
+      //Serial.println(currentEstX);
 
       
     } 
@@ -202,7 +202,7 @@ void musicHandler(){
       
       tone(CENTRAL_SPEAKER, keyA[soundX], noteDuration[durationY]);
       delay(noteDuration[durationY]*1.3);
-      //Serial.println(currentEstY);
+      //Serial.println(currentEstZ);
       
       } 
 
