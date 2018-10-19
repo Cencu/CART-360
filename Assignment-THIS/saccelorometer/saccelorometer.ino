@@ -5,6 +5,8 @@
 
 int keyC [] = {NOTE_C5, NOTE_D5, NOTE_E5, NOTE_F5, NOTE_G5, NOTE_A5, NOTE_B5, NOTE_C6};
 
+int noteDuration [] = {1000/64, 1000/32, 1000/16, 1000/8, 1000/4, 1000/2, 1000, 2000, 4000};
+
 //define the pins for the button and the main speaker
 #define BUTTON_PIN 2
 #define CENTRAL_SPEAKER 3
@@ -35,7 +37,7 @@ int downZ = 303;
 
 //declare the variables that will be mapped and finally used to generate the sounds
 int soundX;
-int soundY;
+int durationY;
 int switchZ;
 
 //define button states
@@ -71,6 +73,7 @@ void loop()
  prevEstZ= currentEstZ;
 
 soundX = map(currentEstX, leftX, rightX, 0, 7);
+durationY = map(currentEstY, frontY, backY, 0, 8);
 switchZ = map(currentEstZ, upZ, downZ, 10, 0);
 delay(10);
  //Print the averaged readings of the accelerometer to the monitor
@@ -104,8 +107,8 @@ delay(10);
   if (switchState == false)
   {
     
-      tone(CENTRAL_SPEAKER, keyC[soundX], 1000);
-      delay(1300);
+      tone(CENTRAL_SPEAKER, keyC[soundX], noteDuration[durationY]);
+      delay(noteDuration[durationY]*1.3);
     } 
 
   else
