@@ -3,9 +3,11 @@
 //taken from Etude 3 template
 #include "pitches.h"
 
-int keyC [] = {NOTE_C5, NOTE_D5, NOTE_E5, NOTE_F5, NOTE_G5, NOTE_A5, NOTE_B5, NOTE_C6};
+int keyC [] = {NOTE_C5, NOTE_D5, NOTE_E5, NOTE_F5, NOTE_G5, NOTE_A5, NOTE_B5, NOTE_C5};
+int keyEb [] = {NOTE_E4,NOTE_FS4, NOTE_G4, NOTE_A4, NOTE_B4, NOTE_C5, NOTE_D5, NOTE_E5};
+int keyA [] = {NOTE_A4,NOTE_B4, NOTE_CS5, NOTE_D5, NOTE_E4, NOTE_FS5, NOTE_GS4, NOTE_E5};
 
-int noteDuration [] = {1000/64, 1000/32, 1000/16, 1000/8, 1000/4, 1000/2, 1000, 2000, 4000};
+int noteDuration [] = {1000/8, 1000/4, 1000/2,1000/2, 1000, 1000/2, 1000/4, 1000/8};
 
 //define the pins for the button and the main speaker
 #define BUTTON_PIN 2
@@ -55,38 +57,9 @@ void setup() {
 
 void loop()
 {
-  
-//Read each analog pin and assign respective pin to the variable
-  x = analogRead(0);
-  y = analogRead(1);
-  z = analogRead(2);
 
- // filter the sensor's result:
- //passing the results for a weighted average
- float currentEstX = filter(x, weight, prevEstX);
- float currentEstY = filter(y, weight, prevEstY);
- float currentEstZ = filter(z, weight, prevEstZ);
- 
- //save current state for future use
- prevEstX= currentEstX;
- prevEstY= currentEstY;
- prevEstZ= currentEstZ;
+  accHandling();
 
-soundX = map(currentEstX, leftX, rightX, 0, 7);
-durationY = map(currentEstY, frontY, backY, 0, 8);
-switchZ = map(currentEstZ, upZ, downZ, 10, 0);
-delay(10);
- //Print the averaged readings of the accelerometer to the monitor
-//  Serial.print("x ");
-//  Serial.print(currentEstX,DEC);
-//  Serial.print(" y ");
-//  Serial.print(currentEstY,DEC);
-//  Serial.print(" z ");
-//  Serial.println(currentEstZ,DEC);
-//  delay(100);
-
- //read button value abd switch its state
-  //int buttonValue = digitalRead(BUTTON_PIN);
 
   if (switchZ <2)
   {
@@ -107,7 +80,7 @@ delay(10);
   if (switchState == false)
   {
     
-      tone(CENTRAL_SPEAKER, keyC[soundX], noteDuration[durationY]);
+      tone(CENTRAL_SPEAKER, keyA[soundX], noteDuration[durationY]);
       delay(noteDuration[durationY]*1.3);
     } 
 
@@ -125,7 +98,34 @@ delay(10);
 void accHandling(){
   
   
-  
+  //Read each analog pin and assign respective pin to the variable
+  x = analogRead(0);
+  y = analogRead(1);
+  z = analogRead(2);
+
+ // filter the sensor's result:
+ //passing the results for a weighted average
+ float currentEstX = filter(x, weight, prevEstX);
+ float currentEstY = filter(y, weight, prevEstY);
+ float currentEstZ = filter(z, weight, prevEstZ);
+ 
+ //save current state for future use
+ prevEstX= currentEstX;
+ prevEstY= currentEstY;
+ prevEstZ= currentEstZ;
+
+soundX = map(currentEstX, leftX+20, rightX-20, 0, 8);
+durationY = map(currentEstY, frontY, backY, 0, 5);
+switchZ = map(currentEstZ, upZ, downZ, 10, 0);
+delay(10);
+ //Print the averaged readings of the accelerometer to the monitor
+//  Serial.print("x ");
+//  Serial.print(currentEstX,DEC);
+//  Serial.print(" y ");
+//  Serial.print(currentEstY,DEC);
+//  Serial.print(" z ");
+//  Serial.println(currentEstZ,DEC);
+//  delay(100);
   
   
   
