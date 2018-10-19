@@ -1,4 +1,10 @@
 
+//include external file where the notes are defined
+//taken from Etude 3 template
+#include "pitches.h"
+
+int keyC [] = {NOTE_C5, NOTE_D5, NOTE_E5, NOTE_F5, NOTE_G5, NOTE_A5, NOTE_B5};
+
 //define the pins for the button and the main speaker
 #define BUTTON_PIN 2
 #define CENTRAL_SPEAKER 3
@@ -64,7 +70,7 @@ void loop()
  prevEstY= currentEstY;
  prevEstZ= currentEstZ;
 
-soundX = map(currentEstX, leftX, rightX, 0, 10);
+soundX = map(currentEstX, leftX, rightX, 0, 6);
 
  //Print the averaged readings of the accelerometer to the monitor
   Serial.print("x ");
@@ -97,7 +103,7 @@ soundX = map(currentEstX, leftX, rightX, 0, 10);
   if (buttonState == true)
   {
     
-      tone(CENTRAL_SPEAKER, soundX*100, 1000);
+      tone(CENTRAL_SPEAKER, keyC[soundX], 1000);
            //delay(100);
     } 
 
