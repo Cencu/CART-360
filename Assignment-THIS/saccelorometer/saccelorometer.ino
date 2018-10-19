@@ -3,6 +3,8 @@
 //taken from Etude 3 template
 #include "pitches.h"
 
+
+//initialize arrays of musical keys. each array contains the notes for each key.
 int keyC [] = {NOTE_C5, NOTE_D5, NOTE_E5, NOTE_F5, NOTE_G5, NOTE_A5, NOTE_B5, NOTE_C5};
 int keyEb [] = {NOTE_E4,NOTE_FS4, NOTE_G4, NOTE_A4, NOTE_B4, NOTE_C5, NOTE_D5, NOTE_E5};
 int keyA [] = {NOTE_A4,NOTE_B4, NOTE_CS5, NOTE_D5, NOTE_E4, NOTE_FS5, NOTE_GS4, NOTE_E5};
@@ -10,7 +12,6 @@ int keyA [] = {NOTE_A4,NOTE_B4, NOTE_CS5, NOTE_D5, NOTE_E4, NOTE_FS5, NOTE_GS4, 
 int noteDuration [] = {1000/8, 1000/4, 1000/2,1000/2, 1000, 1000/2, 1000/4, 1000/8};
 
 //define the pins for the button and the main speaker
-#define BUTTON_PIN 2
 #define CENTRAL_SPEAKER 3
 
 //declare variables for the 3 axis that will be assigned to the 3 axis of the accelerometer
@@ -24,6 +25,7 @@ float prevEstX = 0.0;
 float prevEstY = 0.0;
 float prevEstZ = 0.0;
 
+//get current values of the axis
 float currentEstX;
 float currentEstY;
 float currentEstZ;
@@ -46,7 +48,7 @@ int soundX;
 int durationY;
 int switchZ;
 
-//define button states
+//define switches states
 boolean switchZState = false;
 boolean prevSwitchZState = true;
 
@@ -62,10 +64,9 @@ void setup() {
   // initialize the serial communications
   Serial.begin(9600);
 
-  //initialise button pin mode
-  pinMode(BUTTON_PIN, INPUT);
 }
 
+//call acceleration handling and music handling
 void loop()
 {
 
@@ -76,7 +77,7 @@ void loop()
 }
 
 
-//future handling of accelerometer will be done in this function
+//all the accelerometer readings are averaged and then mapped to their respective variable for functionality
 void accHandling(){
   
   
@@ -96,6 +97,7 @@ void accHandling(){
  prevEstY= currentEstY;
  prevEstZ= currentEstZ;
 
+//define the variables that will change the behavior of the speaker
 soundX = map(currentEstX, leftX+20, rightX-20, 0, 8);
 durationY = map(currentEstY, frontY-20, backY+20, 0, 5);
 switchZ = map(currentEstZ, upZ, downZ, 10, 0);
@@ -113,8 +115,10 @@ delay(10);
   
   }
 
+//music handler controls the behaviors caused in the speaker by switch changes 
 void musicHandler(){
-  
+
+  //if value mapped to Z is less than 2 then switch its state
     if (switchZ <2)
   {
     if (switchZState != prevSwitchZState)
@@ -130,6 +134,7 @@ void musicHandler(){
     prevSwitchZState = !switchZState;
   }
 
+ //if value of X is less or equal to the peak on the left plus 10 then switch its state
  if (currentEstX <= leftX+10)
   {
     if (switchXState != prevSwitchXState)
@@ -145,7 +150,7 @@ void musicHandler(){
     prevSwitchXState = !switchXState;
   }
 
-  
+  //if value of Y is less or equal to the peak on the back plus 10 then switch its state
  if (currentEstY <= backY+10)
   {
     if (switchYState != prevSwitchYState)
@@ -161,18 +166,28 @@ void musicHandler(){
     prevSwitchYState = !switchYState;
   }
 
-  
+
+  //if the state of Z is false then turn on
   if (switchZState == false)
-  {   
-    if(switchXState == true){
+  { 
+    //if the state of X is false then turn on key Eb  
+    if(switchXState == false){
   
       tone(CENTRAL_SPEAKER, keyEb[soundX], noteDuration[durationY]);
       delay(noteDuration[durationY]*1.3);
-    } else if (switchXState == true){
+
+      
+    } 
+    // else if the state of Y is false then turn on key A 
+    else if (switchYState == false){
+      
       tone(CENTRAL_SPEAKER, keyA[soundX], noteDuration[durationY]);
       delay(noteDuration[durationY]*1.3);
       
-      } else {
+      } 
+
+      // set key C by default
+      else {
         tone(CENTRAL_SPEAKER, keyC[soundX], noteDuration[durationY]);
         delay(noteDuration[durationY]*1.3);
         
@@ -180,6 +195,7 @@ void musicHandler(){
     
   }
 
+  //if Z state is true then turn off
   else
   {
  
