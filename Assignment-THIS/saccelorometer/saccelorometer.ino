@@ -3,6 +3,14 @@
 //taken from Etude 3 template
 #include "pitches.h"
 
+//define the pins for the button and the main speaker
+#define CENTRAL_SPEAKER 11
+
+#define RGBR 5
+#define RGBB 6
+#define RGBG 9
+
+
 
 //initialize arrays of musical keys. each array contains the notes for each key.
 int keyC [] = {NOTE_C5, NOTE_D5, NOTE_E5, NOTE_F5, NOTE_G5, NOTE_A5, NOTE_B5, NOTE_C5};
@@ -10,9 +18,6 @@ int keyEb [] = {NOTE_E4,NOTE_FS4, NOTE_G4, NOTE_A4, NOTE_B4, NOTE_C5, NOTE_D5, N
 int keyA [] = {NOTE_A4,NOTE_B4, NOTE_CS5, NOTE_D5, NOTE_E4, NOTE_FS5, NOTE_GS4, NOTE_E5};
 
 int noteDuration [] = {1000/8, 1000/4, 1000/2,1000/2, 1000, 1000/2, 1000/4, 1000/8};
-
-//define the pins for the button and the main speaker
-#define CENTRAL_SPEAKER 3
 
 //declare variables for the 3 axis that will be assigned to the 3 axis of the accelerometer
 int x;
@@ -123,7 +128,7 @@ void musicHandler(){
   {
     if (switchZState != prevSwitchZState)
     {
-      delay(500);
+      delay(700);
       switchZState = ! switchZState;
       prevSwitchZState = switchZState;
     }
@@ -135,19 +140,22 @@ void musicHandler(){
   }
 
  //if value of X is less or equal to the peak on the left plus 10 then switch its state
- if (currentEstX >= leftX-10)
+ if (currentEstX <= rightX+10)
   {
     if (switchXState != prevSwitchXState)
     {
-      delay(100);
+      delay(300);
       switchXState = ! switchXState;
       prevSwitchXState = switchXState;
+      
     }
 
   }
   else
   {
     prevSwitchXState = !switchXState;
+    
+
   }
 
   //if value of Y is less or equal to the peak on the back plus 10 then switch its state
@@ -155,15 +163,18 @@ void musicHandler(){
   {
     if (switchYState != prevSwitchYState)
     {
-      delay(100);
+      delay(300);
       switchYState = ! switchYState;
       prevSwitchYState = switchYState;
+      
+
     }
 
   }
   else
   {
     prevSwitchYState = !switchYState;
+
   }
 
 
@@ -172,22 +183,35 @@ void musicHandler(){
   { 
     //if the state of X is false then turn on key Eb  
     if(switchXState == false){
-  
+
+      analogWrite(RGBR, 0);
+      analogWrite(RGBG, 0);
+      analogWrite(RGBB, 255);
       tone(CENTRAL_SPEAKER, keyEb[soundX], noteDuration[durationY]);
       delay(noteDuration[durationY]*1.3);
+      Serial.println(currentEstX);
 
       
     } 
     // else if the state of Y is false then turn on key A 
     else if (switchYState == false){
+
+      analogWrite(RGBG, 0);
+      analogWrite(RGBB, 0);
+      analogWrite(RGBR, 255);
       
       tone(CENTRAL_SPEAKER, keyA[soundX], noteDuration[durationY]);
       delay(noteDuration[durationY]*1.3);
+      //Serial.println(currentEstY);
       
       } 
 
       // set key C by default
       else {
+
+        analogWrite(RGBB, 0);
+        analogWrite(RGBR, 0);
+        analogWrite(RGBG, 255);
         tone(CENTRAL_SPEAKER, keyC[soundX], noteDuration[durationY]);
         delay(noteDuration[durationY]*1.3);
         
@@ -200,6 +224,9 @@ void musicHandler(){
   {
  
     noTone(CENTRAL_SPEAKER);
+      analogWrite(RGBB, 0);
+      analogWrite(RGBG, 0);
+      analogWrite(RGBR, 0);
   }
   
   }
