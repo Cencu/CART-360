@@ -1,71 +1,81 @@
 
-int x;//Center is 345
-int preX;
-int currentX;
-int y;//Center is
-int preY;
-int currentY;
-int z;
-int preZ;
-int currentZ;
-int gravity;
-
-//X-Axis, Y-Axis and Z-Axis
-//X = Side to side
-//Z = Up and Down
-//Y = Front and backwards
-//<345  = down
-//> 345 = up
-
-
-int xLoc;
-int yLoc;
-int zLoc;
-int piezoPin = 3;
-int bigSpeaker = 5;
+//define the pins for the button and the main speaker
 #define BUTTON_PIN 2
+#define CENTRAL_SPEAKER 3
 
+//declare variables for the 3 axis that will be assigned to the 3 axis of the accelerometer
+int x;
+int y;
+int z;
+
+//define variables used on the noise filter
+const float weight = 0.5;
+float prevEstX = 0.0;
+float prevEstY = 0.0;
+float prevEstZ = 0.0;
+
+//tresshold readings of all axis readings (center of accelerometer)
+int tresholdX = 350;
+int tresholdY = 354;
+int tresholdZ = 447;
+
+//peak opposites for each axis
+int leftX = 280;
+int rightX = 420;
+int frontY = 425;
+int backY = 274;
+int upZ = 447;
+int downZ = 303;
+
+//define button states
 boolean buttonState = false;
 boolean prevButtonState = true;
 
 void setup() {
-  // initialize the serial communications:
+  
+  // initialize the serial communications
   Serial.begin(9600);
+
+  //initialise button pin mode
   pinMode(BUTTON_PIN, INPUT);
 }
 
 void loop()
 {
+  
+//Read each analog pin and assign respective pin to the variable
+  x = analogRead(0);
+  y = analogRead(1);
+  z = analogRead(2);
 
-  preX = 345;
-  currentX = x - preX;
+ // filter the sensor's result:
+ //passing the results for a weighted average
+ float currentEstX = filter(x, weight, prevEstX);
+ float currentEstY = filter(y, weight, prevEstY);
+ float currentEstZ = filter(z, weight, prevEstZ);
+ 
+ //save current state for future use
+ prevEstX= currentEstX;
+ prevEstY= currentEstY;
+ prevEstZ= currentEstZ;
 
-  if (currentX == currentX + 15) {
-    currentX += analogRead(0);
-  }
+ //Print the averaged readings of the accelerometer to the monitor
+  Serial.print("x ");
+  Serial.print(currentEstX,DEC);
+  Serial.print(" y ");
+  Serial.print(currentEstY,DEC);
+  Serial.print(" z ");
+  Serial.println(currentEstZ,DEC);
+  delay(500);
 
-  preY = 345;
-  currentY = y - preY;
-  if (currentY == currentY + 15) {
-    currentY += analogRead(1);
-  }
-  gravity = 40;
-  preZ = 337;
-  currentZ = z - preZ;
-  if (currentZ == currentZ - 15) {
-    //currentZ + gravity;
-    currentZ -= analogRead(2);
-
-  }
-
-
+ //read button value abd switch its state
   int buttonValue = digitalRead(BUTTON_PIN);
 
   if (buttonValue == HIGH)
   {
     if (buttonState != prevButtonState)
     {
-      delay(200);
+      delay(100);
       buttonState = ! buttonState;
       prevButtonState = buttonState;
     }
@@ -76,61 +86,37 @@ void loop()
     prevButtonState = !buttonState;
   }
 
-
-  //Read each pin so we can see where the values are being mapped to
-  x = analogRead(0);
-  y = analogRead(1);
-  z = analogRead(2);
-  /* //Print the locations in the Serial Monitor
-    Serial.print("x ");
-    Serial.print(currentX,DEC);*/
-  //  Serial.print("y ");
-  //    Serial.println(y,DEC);
-  Serial.print("x ");
-  Serial.println(currentX, DEC);
-  Serial.print("y ");
-  Serial.println(currentY,DEC);
-
-  // Serial.println(xLoc,DEC);
-
-  delay(100);
-  if (buttonState == true)
-  {
-    if (currentX > 120 && currentX < 140) {
-      noTone(piezoPin);
-      tone(bigSpeaker, currentX * 10, 200);
-           //delay(100);
-    } else if (currentY > 137 && currentY < 157) {
-      noTone(bigSpeaker);
-      tone(piezoPin, currentY * 10, 200);
-
-
-    }
-
-  }
-  else
-  {
-    noTone(piezoPin);
-    noTone(bigSpeaker);
-  }
+  
+//  if (buttonState == true)
+//  {
+//    
+//      tone(bigSpeaker, currentX * 10, 1000);
+//           //delay(100);
+//    } 
+//
+//  else
+//  {
+// 
+//    noTone(bigSpeaker);
+//  }
 
 
 }
 
 
-void mapLoc() {
-  // sound-x
-  //sound-y
-  // sound-z
-  if (x < 50) {
-    //    piexoPin = 1
+//future handling of accelerometer will be done in this function
+void accHandling(){
+  
+  
+  
+  
+  
+  
   }
-  if (x > 50 && x < 100) {
-
-
-  }
-
-
-
-
+  
+//filter function averaging raw readings from the sensor
+//(code taken from the class slides - Weighted Average Section)
+float filter (float rawValue, float w, float lastValue) {
+ float result = w * rawValue + (1.0-w)*lastValue; 
+ return result;
 }
