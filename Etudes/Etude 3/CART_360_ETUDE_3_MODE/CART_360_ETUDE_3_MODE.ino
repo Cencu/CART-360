@@ -25,9 +25,9 @@
 #define BUTTON_MODE_PIN 2 // Button to change the mode
 
 // constants for RGB LED
-#define LED_PIN_R 5 // R PIN
-#define LED_PIN_G 9 // G PIN
-#define LED_PIN_B 6 // B PIN
+#define LED_PIN_R 9 // R PIN
+#define LED_PIN_G 6 // G PIN
+#define LED_PIN_B 5 // B PIN
 
 // constant for note in (button-resistor ladder on breadboard)
 # define NOTE_IN_PIN A0
@@ -89,9 +89,27 @@ void loop()
  * (i.e. if mode ==2 and we press, then mode ==3) ...
 **************************************************************************/
 void chooseMode(){
-  if (BUTTON_MODE_PIN == 0) {
-    
+  mode = digitalRead(BUTTON_MODE_PIN);
+
+  //If the button is on, then we keep it in mode 0
+  if (BUTTON_MODE_PIN == HIGH) {
+    mode+=1;
+    Serial.print(BUTTON_MODE_PIN);
+  
+  } if (BUTTON_MODE_PIN > 6) {
+    mode = 0;
   }
+    
+//  //If the button is on and mode is one
+//   if (BUTTON_MODE_PIN == HIGH && mode == 1) {
+//    mode = 1;
+//  }
+//   if (BUTTON_MODE_PIN == HIGH ) {
+//  }
+//   if (BUTTON_MODE_PIN == 3) {
+//  }
+//   if (BUTTON_MODE_PIN == 4) {
+//  }
 }
 
 /******************SETRGB(): IMPLEMENT *********************************
@@ -104,9 +122,19 @@ void chooseMode(){
  * if mode is 4 - RGB LED iS PURPLE
  * YOU MUST USE A SWITCH CASE CONSTRUCT (NOT A SERIES OF IF / ELSE STATEMENTS
 **************************************************************************/
-void setRGB()
-{
-  //IMPLEMENT
+void setRGB() {
+if (mode ==0 ) {
+  digitalWrite(LED_PIN_R,HIGH);
+}
+if (mode ==1) {
+digitalWrite(LED_PIN_B, HIGH);
+ digitalWrite(LED_PIN_R, LOW);
+
+} if (mode == 2) {
+  digitalWrite(LED_PIN_B, LOW);
+ digitalWrite(LED_PIN_R, LOW);
+}
+
 }
 /**********************SELECTMODE() DO NOT CHANGE *******************************
  * INSTRUCTIONS: 
