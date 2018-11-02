@@ -130,7 +130,7 @@ void chooseMode() {
 **************************************************************************/
 void setRGB() {
 //If it is on reset then no LED light will emit
-  if (mode == 0 ) {
+  if (mode == 0) {
     digitalWrite(LED_PIN_R, LOW);
     digitalWrite(LED_PIN_G, LOW);
     digitalWrite(LED_PIN_B, LOW);
@@ -158,7 +158,7 @@ void setRGB() {
     digitalWrite(LED_PIN_R, HIGH);
     digitalWrite(LED_PIN_B, HIGH);
 
-  } else {
+  } else if (mode != 4 && mode == 1) {
     digitalWrite(LED_PIN_R, LOW);
     digitalWrite(LED_PIN_B, LOW);
 
@@ -185,11 +185,11 @@ void setRGB() {
 
 ******************************************************************************/
 void selectMode() {
-  if (mode == 0) {
+  if (mode == 1) {
     reset();
 
   }
-  else if (mode == 1) {
+  else if (mode == 0) {
     live();
   }
   else if (mode == 2) {
@@ -223,7 +223,7 @@ void reset()
    THEN - output the note to the buzzer using the tone() function
 **************************************************************************/
 void live() {
-  if (mode == 1) {
+  if (mode == 0) {
     //Use analogVal to read the pin
     int analogVal = analogRead(A0);
 //If the voltage is between a certain number, then play a tone for the selected duration.
@@ -254,7 +254,7 @@ void live() {
    THEN store that note in the array  - BE CAREFUL - you can only allow for up to MAX_NOTES to be stored
 **************************************************************************/
 void record() {
-  if (mode == 0) {
+  if (mode == 1) {
     int analogVal = analogRead(A0);
 
     if (analogVal > 1 && analogVal < 10) {
