@@ -20,6 +20,17 @@
    PROVIDE COMMENTS FOR ANY OF THE CODE IMPLEMENTED
    GOOD LUCK!
 */
+// behavior of the resistor ladder (keyboard), mode selector and what is occurring
+// on the Arduino as a voltage. How does the input become audible sound?  */
+// The analog read input returns a value of 1023. For any voltage between 0V and 5V, analogRead
+//   will return a number porportional to the voltage. Since we do not change the voltage that's supplied
+//  to the pin, we add resistors to manipulate the voltage supplied, therefore changing the voltage
+// supplied to the buttons. Since the analog pin is transmitting integers, we can then create parameters
+// to play on each button, since the buttons are connected by the ladder, we set parameters depending
+// on the voltage inputted to each button, we then set the tone to the piezo pin and the frequency we
+// would like to play.
+
+
 /**** CONSTANTS ********************************************************/
 
 #define BUTTON_MODE_PIN 2 // Button to change the mode
@@ -47,6 +58,7 @@ int countNotes = 0;
 int mode = 0; // start at off
 // array to hold the notes played (for record/play mode)
 int notes[MAX_NOTES];
+boolean switchMode = false;
 /*************************************************************************/
 
 
@@ -74,8 +86,8 @@ void loop()
   chooseMode();
   setRGB();
   selectMode();
-  Serial.println(mode);
 }
+
 /******************CHOOSEMODE(): IMPLEMENT *********************************
    INSTRUCTIONS:
    Read the value from the Button (linked to the BUTTON_MODE_PIN) and
@@ -91,28 +103,18 @@ void loop()
    (i.e. if mode ==2 and we press, then mode ==3) ...
 **************************************************************************/
 void chooseMode() {
-  int prev_mode = 0;
   mode = digitalRead(BUTTON_MODE_PIN);
+
+
   if (BUTTON_MODE_PIN == HIGH) {
-    delay(50);
-    mode = mode;
-
-    if (mode != prev_mode) {
-
-      prev_mode++;
-    }
+    switchMode = true;
   }
+  if (switchMode == true) {
+    mode = mode + 1;
+  }
+  Serial.println(mode);
+
 }
-//  //If the button is on and mode is one
-//   if (BUTTON_MODE_PIN == HIGH && mode == 1) {
-//    mode = 1;
-//  }
-//   if (BUTTON_MODE_PIN == HIGH ) {
-//  }
-//   if (BUTTON_MODE_PIN == 3) {
-//  }
-//   if (BUTTON_MODE_PIN == 4) {
-//  }
 
 
 /******************SETRGB(): IMPLEMENT *********************************
@@ -139,6 +141,24 @@ void setRGB() {
   } else {
     digitalWrite(LED_PIN_B, LOW);
 
+  } if (mode == 2) {
+    digitalWrite(LED_PIN_R, HIGH);
+  } else {
+    digitalWrite(LED_PIN_R, LOW);
+
+  }  if (mode == 3) {
+    digitalWrite(LED_PIN_G, HIGH);
+  } else {
+    digitalWrite(LED_PIN_G, LOW);
+
+  } if (mode == 4) {
+    digitalWrite(LED_PIN_R, HIGH);
+    digitalWrite(LED_PIN_B, HIGH);
+
+  } else {
+    digitalWrite(LED_PIN_R, LOW);
+    digitalWrite(LED_PIN_B, LOW);
+
   }
 
 
@@ -161,17 +181,15 @@ void setRGB() {
    REQUIRED: only play notes from the array (no live stuff)
 
 ******************************************************************************/
-void selectMode()
-{
-  if (mode == 2) {
-    //    reset();
-    live();
+void selectMode() {
+  if (mode == 0) {
+    reset();
 
   }
   else if (mode == 1) {
-    //live();
+    live();
   }
-  else if (mode == 0) {
+  else if (mode == 2) {
     record();
   }
 
@@ -189,8 +207,9 @@ void selectMode()
 **************************************************************************/
 void reset()
 {
-  // IMPLEMENT
+  if (mode == 0) {
 
+  }
 }
 /******************LIVE(): IMPLEMENT **************************************
    INSTRUCTIONS:
@@ -200,40 +219,30 @@ void reset()
    SO: you need read in the input from the analog input (linked to the button-resistor ladder combo)
    THEN - output the note to the buzzer using the tone() function
 **************************************************************************/
-void live()
-{
-  countNotes = analogRead(A0);
-  //Serial.println(notes[MAX_NOTES]);
-//  int button;
- if (countNotes > 1 && countNotes < 10) {
-   //tone(3, 300, duration);
-   notes[MAX_NOTES] = 1;
- } if (notes[MAX_NOTES] == 1) {
-  tone(3, 300, duration);
- }
+void live() {
+  if (mode == 1) {
+    int analogVal = analogRead(A0);
 
- if (notes[MAX_NOTES] > 1 && notes[MAX_NOTES] < 10) {
-   tone(3, 300, duration);
-   countNotes = 1;
- }  if (notes[MAX_NOTES] > 10 && notes[MAX_NOTES] < 100) {
-   tone(3, 600, duration);
-      countNotes = 2;
- } if (notes[MAX_NOTES] > 110 && notes[MAX_NOTES] < 500) {
-   tone(3, 900, duration);
-      countNotes = 3;
+    if (analogVal > 1 && analogVal < 10) {
+      tone(3, 300, duration);
+    }
 
- } if (notes[MAX_NOTES] > 510 && notes[MAX_NOTES] < 1000) {
-   tone(3, 1200, duration);
-      countNotes = 4;
+    if (analogVal > 1 && analogVal < 10) {
+      tone(3, 300, duration);
 
- } if (notes[MAX_NOTES] > 1000 && notes[MAX_NOTES] < 1100) {
-   tone(3, 1500, duration);
-      countNotes = 5;
+    }  if (analogVal > 10 && analogVal < 100) {
+      tone(3, 600, duration);
 
- } 
+    } if (analogVal > 110 && analogVal < 500) {
+      tone(3, 900, duration);
 
+    } if (analogVal > 510 && analogVal < 1000) {
+      tone(3, 1200, duration);
 
-
+    } if (analogVal > 1000 && analogVal < 1100) {
+      tone(3, 1500, duration);
+    }
+  }
 }
 /******************RECORD(): IMPLEMENT **********************************
    INSTRUCTIONS:
@@ -244,30 +253,19 @@ void live()
    AND - output the note to the buzzer using the tone() function
    THEN store that note in the array  - BE CAREFUL - you can only allow for up to MAX_NOTES to be stored
 **************************************************************************/
-void record(){
-  notes[MAX_NOTES] = notes[countNotes];
-  countNotes = constrain(countNotes,0,16);
+void record() {
+  if (mode == 0) {
+    int analogVal = analogRead(A0);
 
-  Serial.println(countNotes);
-   if (notes[MAX_NOTES] > 1 && notes[MAX_NOTES] < 10) {
-   tone(3, 300, duration);
-   countNotes = 1;
- }  if (notes[MAX_NOTES] > 10 && notes[MAX_NOTES] < 100) {
-   tone(3, 600, duration);
-      countNotes = 2;
- } if (notes[MAX_NOTES] > 110 && notes[MAX_NOTES] < 500) {
-   tone(3, 900, duration);
-      countNotes = 3;
+    if (analogVal > 1 && analogVal < 10) {
+      countNotes = 1;
+    } if (countNotes == 1) {
+      tone(3, 300, duration);
+    }
+    notes[MAX_NOTES] = countNotes;
+    countNotes++;
+  }
 
- } if (notes[MAX_NOTES] > 510 && notes[MAX_NOTES] < 1000) {
-   tone(3, 1200, duration);
-      countNotes = 4;
-
- } if (notes[MAX_NOTES] > 1000 && notes[MAX_NOTES] < 1100) {
-   tone(3, 1500, duration);
-      countNotes = 5;
-
- } 
 }
 /******************PLAY(): IMPLEMENT ************************************
    INSTRUCTIONS:
@@ -279,10 +277,12 @@ void record(){
    ALSO: as long as we are in this mode, the notes are played over and over again
    BE CAREFUL: make sure you allow for the user to get to another mode from the mode button...
 **************************************************************************/
-void play()
-{
-  // IMPLEMENT
+void play() {
+  if (mode == 3) {
+
+  }
 }
+
 /******************LOOPMODE(): IMPLEMENT *********************************
    INSTRUCTIONS:
    this function will playback any notes stored in the array that were recorded
@@ -293,9 +293,10 @@ void play()
    ALSO: as long as we are in this mode, the notes are played over and over again
    BE CAREFUL: make sure you allow for the user to get to another mode from the mode button...
 **************************************************************************/
-void looper()
-{
-  //IMPLEMENT
+void looper() {
+  if (mode == 4) {
+
+  }
 }
 
 /**************************************************************************/
