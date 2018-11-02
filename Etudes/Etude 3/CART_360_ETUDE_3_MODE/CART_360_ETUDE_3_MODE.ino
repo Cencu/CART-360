@@ -163,7 +163,7 @@ void setRGB() {
 ******************************************************************************/
 void selectMode()
 {
-  if (mode == 0) {
+  if (mode == 2) {
     //    reset();
     live();
 
@@ -171,7 +171,7 @@ void selectMode()
   else if (mode == 1) {
     //live();
   }
-  else if (mode == 2) {
+  else if (mode == 0) {
     record();
   }
 
@@ -202,26 +202,34 @@ void reset()
 **************************************************************************/
 void live()
 {
-  //  # define NOTE_IN_PIN A0
-  //constant for max number of notes in array
-  //#define MAX_NOTES 16
-  // a constant for duration
-  //const int duration = 200;
-  // constant for pin to output for buzzer
-  //#define BUZZER_PIN 3 // PWM
-  int analogVal = analogRead(A0);
-  Serial.println(analogVal);
+  countNotes = analogRead(A0);
+  //Serial.println(notes[MAX_NOTES]);
 //  int button;
- if (analogVal > 1 && analogVal < 10) {
+ if (countNotes > 1 && countNotes < 10) {
+   //tone(3, 300, duration);
+   notes[MAX_NOTES] = 1;
+ } if (notes[MAX_NOTES] == 1) {
+  tone(3, 300, duration);
+ }
+
+ if (notes[MAX_NOTES] > 1 && notes[MAX_NOTES] < 10) {
    tone(3, 300, duration);
- }  if (analogVal > 10 && analogVal < 100) {
+   countNotes = 1;
+ }  if (notes[MAX_NOTES] > 10 && notes[MAX_NOTES] < 100) {
    tone(3, 600, duration);
- } if (analogVal > 110 && analogVal < 500) {
+      countNotes = 2;
+ } if (notes[MAX_NOTES] > 110 && notes[MAX_NOTES] < 500) {
    tone(3, 900, duration);
- } if (analogVal > 510 && analogVal < 1000) {
+      countNotes = 3;
+
+ } if (notes[MAX_NOTES] > 510 && notes[MAX_NOTES] < 1000) {
    tone(3, 1200, duration);
- } if (analogVal > 1000 && analogVal < 1100) {
+      countNotes = 4;
+
+ } if (notes[MAX_NOTES] > 1000 && notes[MAX_NOTES] < 1100) {
    tone(3, 1500, duration);
+      countNotes = 5;
+
  } 
 
 
@@ -236,9 +244,30 @@ void live()
    AND - output the note to the buzzer using the tone() function
    THEN store that note in the array  - BE CAREFUL - you can only allow for up to MAX_NOTES to be stored
 **************************************************************************/
-void record()
-{
-  // IMPLEMENT
+void record(){
+  notes[MAX_NOTES] = notes[countNotes];
+  countNotes = constrain(countNotes,0,16);
+
+  Serial.println(countNotes);
+   if (notes[MAX_NOTES] > 1 && notes[MAX_NOTES] < 10) {
+   tone(3, 300, duration);
+   countNotes = 1;
+ }  if (notes[MAX_NOTES] > 10 && notes[MAX_NOTES] < 100) {
+   tone(3, 600, duration);
+      countNotes = 2;
+ } if (notes[MAX_NOTES] > 110 && notes[MAX_NOTES] < 500) {
+   tone(3, 900, duration);
+      countNotes = 3;
+
+ } if (notes[MAX_NOTES] > 510 && notes[MAX_NOTES] < 1000) {
+   tone(3, 1200, duration);
+      countNotes = 4;
+
+ } if (notes[MAX_NOTES] > 1000 && notes[MAX_NOTES] < 1100) {
+   tone(3, 1500, duration);
+      countNotes = 5;
+
+ } 
 }
 /******************PLAY(): IMPLEMENT ************************************
    INSTRUCTIONS:
