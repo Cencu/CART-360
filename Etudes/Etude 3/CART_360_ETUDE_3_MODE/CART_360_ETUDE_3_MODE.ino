@@ -58,7 +58,6 @@ int countNotes = 0;
 int mode = 0; // start at off
 // array to hold the notes played (for record/play mode)
 int notes[MAX_NOTES];
-boolean switchMode = false;
 /*************************************************************************/
 
 
@@ -103,15 +102,17 @@ void loop()
    (i.e. if mode ==2 and we press, then mode ==3) ...
 **************************************************************************/
 void chooseMode() {
+  /*MY ATTEMPT*/
+  /*I attempted to switch the modes with digitalRead and mode, I could not figure how to increment mode without 
+   * holding the button. I understood that it returns to zero after the button was pressed but I did not
+   * understand how to keep it to one after it has been pressed*/
+  //Assign mode to read the button value 
   mode = digitalRead(BUTTON_MODE_PIN);
-
-
+  //if the button is pressed then increment mode
   if (BUTTON_MODE_PIN == HIGH) {
-    switchMode = true;
+    mode++;
   }
-  if (switchMode == true) {
-    mode = mode + 1;
-  }
+
   Serial.println(mode);
 
 }
@@ -128,17 +129,19 @@ void chooseMode() {
    YOU MUST USE A SWITCH CASE CONSTRUCT (NOT A SERIES OF IF / ELSE STATEMENTS
 **************************************************************************/
 void setRGB() {
-
+//If it is on reset then no LED light will emit
   if (mode == 0 ) {
     digitalWrite(LED_PIN_R, LOW);
     digitalWrite(LED_PIN_G, LOW);
     digitalWrite(LED_PIN_B, LOW);
 
   }
+  //If the mode is on one then turn on blue
   if (mode == 1) {
     digitalWrite(LED_PIN_B, HIGH);
 
   } else {
+    //If it is not on mode one then turn it off. The same applies for the rest of the code.
     digitalWrite(LED_PIN_B, LOW);
 
   } if (mode == 2) {
@@ -221,16 +224,13 @@ void reset()
 **************************************************************************/
 void live() {
   if (mode == 1) {
+    //Use analogVal to read the pin
     int analogVal = analogRead(A0);
-
+//If the voltage is between a certain number, then play a tone for the selected duration.
     if (analogVal > 1 && analogVal < 10) {
       tone(3, 300, duration);
-    }
-
-    if (analogVal > 1 && analogVal < 10) {
-      tone(3, 300, duration);
-
-    }  if (analogVal > 10 && analogVal < 100) {
+      
+    } if (analogVal > 10 && analogVal < 100) {
       tone(3, 600, duration);
 
     } if (analogVal > 110 && analogVal < 500) {
