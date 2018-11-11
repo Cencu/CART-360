@@ -258,12 +258,11 @@ void record() {
     int analogVal = analogRead(A0);
 
     if (analogVal > 1 && analogVal < 10) {
-      countNotes = 1;
+      notes[countNotes] = 1;
     } if (countNotes == 1) {
       tone(3, 300, duration);
     }
-    notes[MAX_NOTES] = countNotes;
-    countNotes++;
+
   }
 
 }
@@ -278,6 +277,7 @@ void record() {
    BE CAREFUL: make sure you allow for the user to get to another mode from the mode button...
 **************************************************************************/
 void play() {
+  
   if (mode == 3) {
 
   }
@@ -295,7 +295,9 @@ void play() {
 **************************************************************************/
 void looper() {
   if (mode == 4) {
-
+  for (countNotes = 0; countNotes < MAX_NOTES; countNotes++) {
+    (tone,3,notes[MAX_NOTES],duration);
+  }
   }
 }
 
