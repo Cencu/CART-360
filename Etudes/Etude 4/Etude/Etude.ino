@@ -43,7 +43,6 @@ const int duration =200;
 
 // constant for input from photo cell
 #define PHOTO_PIN A1
-
 // constant for size of running samples array (for averging)
 #define RUNNING_SAMPLES 16
 
@@ -85,7 +84,6 @@ int testNote;
 // vars for averageing
 int runningAverageBuffer[RUNNING_SAMPLES];
 int nextCount = 0;
-
 /*************************************************************************/
 
 
@@ -112,7 +110,7 @@ void loop()
   chooseMode();
   setRGB();
   selectMode();
-  Serial.println(activeFrequency);
+  Serial.println(PHOTO_PIN);
 }
 /******************CHOOSEMODE() *********************************
  * INSTRUCTIONS:
@@ -260,6 +258,23 @@ void live()
    // IMPLEMENT live()
    offsetFrequency = getPhotoFrequency();
    // output sound
+  int val = analogRead(A0);
+  
+      if (val > 1 && val < 10) {
+      tone(3, offsetFrequency, duration);
+      
+    } if (val > 10 && val < 100) {
+      tone(3, offsetFrequency, duration);
+
+    } if (val > 110 && val < 500) {
+      tone(3, offsetFrequency, duration);
+
+    } if (val > 510 && val < 1000) {
+      tone(3, offsetFrequency, duration);
+
+    } if (val > 1000 && val < 1100) {
+      tone(3, offsetFrequency, duration);
+    }
  
 }
 
@@ -427,6 +442,7 @@ int getPhotoFrequency()
 {
   activeFrequency = analogRead(PHOTO_PIN);
 activeFrequency = 1023 - activeFrequency;
+//LED_PIN_B = map(activeFrequency,0,1023,0,255);
 
 }
 
@@ -437,8 +453,18 @@ activeFrequency = 1023 - activeFrequency;
 **************************************************************************/
 int getRunningAverage()
 {
- //IMPLEMENT
-
+int rawSenseVal = analogRead(PHOTO_PIN);
+runningAverageBuffer[nextCount] = rawSenseVal;
+nextCount++;
+if (nextCount >= RUNNING_SAMPLES) {
+  nextCount = 0;
+}
+int currentSum = 0;
+for(int i = 0; i <RUNNING_SAMPLES;i++){
+  currentSum+=runningAverageBuffer[i];
+}
+int averageVal = currentSum/RUNNING_SAMPLES;
+delay(100);
 }
 /******************COLORLED(): IMPLEMENT *********************************
  * INSTRUCTIONS:
