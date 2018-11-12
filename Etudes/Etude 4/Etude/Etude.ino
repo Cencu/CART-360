@@ -261,19 +261,19 @@ void live()
   int val = analogRead(A0);
   
       if (val > 1 && val < 10) {
-      tone(3, offsetFrequency, duration);
+      tone(3, offsetFrequency+300, duration);
       
     } if (val > 10 && val < 100) {
-      tone(3, offsetFrequency, duration);
+      tone(3, offsetFrequency+600, duration);
 
     } if (val > 110 && val < 500) {
-      tone(3, offsetFrequency, duration);
+      tone(3, offsetFrequency+900, duration);
 
     } if (val > 510 && val < 1000) {
-      tone(3, offsetFrequency, duration);
+      tone(3, offsetFrequency+1200, duration);
 
     } if (val > 1000 && val < 1100) {
-      tone(3, offsetFrequency, duration);
+      tone(3, offsetFrequency+1500, duration);
     }
  
 }
@@ -465,6 +465,7 @@ for(int i = 0; i <RUNNING_SAMPLES;i++){
 }
 int averageVal = currentSum/RUNNING_SAMPLES;
 delay(100);
+return getPhotoFrequency();
 }
 /******************COLORLED(): IMPLEMENT *********************************
  * INSTRUCTIONS:
@@ -473,6 +474,7 @@ delay(100);
 **************************************************************************/
 void colorLED(int col)
 {
+  col = activeFrequency;
   analogWrite(LED_PIN_R, 0);   // Turn on the LED -R
   analogWrite(LED_PIN_G, col);   // Turn on the LED -G
   analogWrite(LED_PIN_B, 0);   // Turn on the LED -B
