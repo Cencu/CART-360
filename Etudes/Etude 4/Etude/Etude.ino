@@ -85,15 +85,15 @@ int testNote;
 int runningAverageBuffer[RUNNING_SAMPLES];
 int nextCount = 0;
 /*************************************************************************/
-
- int peak = 0;
+//Check the peak value of the photocell
+int peak = 0;
 /*********************SETUP() DO NOT CHANGE*******************************/
 // Declare pin mode for the single digital input
 void setup()
 {
   Serial.begin(9600);
   pinMode(NOTE_IN_PIN, INPUT);
-  
+
 }
 
 /**********************LOOP() DO NOT CHANGE *******************************
@@ -111,8 +111,6 @@ void loop()
   chooseMode();
   setRGB();
   selectMode();
-    //Serial.println(timePassed);
-
 }
 /******************CHOOSEMODE() *********************************
    INSTRUCTIONS:
@@ -257,11 +255,13 @@ void reset()
 **************************************************************************/
 void live()
 {
-  // IMPLEMENT live()
+  //Set the offset to get the photofrequency
   offsetFrequency = getPhotoFrequency();
-  // output sound
+  //Set an integer to read the analog pin
   int val = analogRead(A0);
-
+  //When you press a button, a certain frequency will be outputted, which is collected with int val
+  //I set parameters for each button press, where if the button press is within the analog value
+  //The photcell frequency will be played. I added some numbers to boost the tone played as it was low
   if (val > 200 && val < 290) {
     tone(3, offsetFrequency + 300, duration);
 
@@ -335,21 +335,17 @@ void recordWithDuration()
   {
     // read in the value from button press
     testNote = analogRead(NOTE_IN_PIN);
-    /*** STATE A::: *******************************************
-        IF the testNote is > min AND the timer has not reached 5 secs:
-        This means we are pressing on a note button
-    */
-    //     if(testNote > 1 && timePassed < MAX_PRESS_TIME) {
-    //      activeNoteButton = true;
-    //     }
+    //If the test not is greater than the noise level, meaning if it is pressed
+    //And it has not exceeded the time pressed, then we can move into the function
     if (testNote > theAdjuster && (timePassed < MAX_PRESS_TIME)) {
-      
-     
+
+
       /*** STATE AA::: *******************************************
           IF the boolean is false it means we have just started to press the button
           YOU now need to implement the function below which will set up all things
           required to have a new timer
       */
+      //If the button is not being pressed, then we reset the timer to 0.
       if (activeNoteButton == false)
       {
         /*** FUNCTION TO IMPLEMENT ***/
@@ -363,15 +359,20 @@ void recordWithDuration()
            2/ get the photoCell Value
            3/ get the current running average
       */
+      //If it is being pressed we start counting
       else
       { // update the timer
         /*** FUNCTION TO IMPLEMENT ***/
+        //This function starts counting from 0 upwards.
         updateTimer();
         /*** FUNCTION TO IMPLEMENT ***/
+        //We attribute the photocell frequency to the offset frequency
         offsetFrequency = getPhotoFrequency();
         /*** FUNCTION TO IMPLEMENT ***/
+        //Same like live();
         playCurrentNote();
         /*** FUNCTION TO IMPLEMENT ***/
+        //We get the average of the photocell and attribute it to the average offset
         averageOffsetFreq = getRunningAverage();
       }
     }
@@ -382,7 +383,7 @@ void recordWithDuration()
     else if (testNote > theAdjuster && (timePassed > MAX_PRESS_TIME))
     {
       noTone(BUZZER_PIN);
-      
+
 
     }
     /*** STATE C::: *******************************************
@@ -390,11 +391,11 @@ void recordWithDuration()
        this means we have STOPPED pressing the button
        YOU: need to implement the function to update the arrays etc
     */
+
     else if ((testNote <= theAdjuster && activeNoteButton == true) ) {
       /*** FUNCTION TO IMPLEMENT ***/
-      Serial.println(timePassed);
       updateArraysWithNoteAndTimings();
-      
+
     }
 
 
@@ -429,15 +430,14 @@ void updateTimer()
 **************************************************************************/
 void playCurrentNote()
 {
-  
-  // IMPLEMENT live()
+  //Like live() we attribute the offset to the photocell frequency
   offsetFrequency = getPhotoFrequency();
   // output sound
   int val = analogRead(NOTE_IN_PIN);
-
+``//if the analog pin is greater than the peak, then we attribute the peak to the value.
   if (val > peak) peak = val;
 
- if (val > 200 && val < 290) {
+  if (val > 200 && val < 290) {
     tone(3, offsetFrequency + 300, duration);
 
   } if (val > 300 && val < 350) {
@@ -463,28 +463,24 @@ void playCurrentNote()
    reset any counters
 **************************************************************************/
 void updateArraysWithNoteAndTimings()
-{
-
-
-    
-  
+{ //If we have not exceeded the amount of notes stored
   if (countNotes < MAX_NOTES)
   {
     // add a note to the array if have a value
     int testNote = analogRead(NOTE_IN_PIN);
- 
-      durations[countNotes] = timePassed;
-      notes[countNotes] = peak+offsetFrequency; // possible vals?
-    //  tone(BUZZER_PIN, notes[countNotes], durations[MAX_NOTES]);
-      //delay(duration); // wait for tone to finish
-      countNotes++;
-      //delay(100);
+    //we store the durations of each note pressed
+    durations[countNotes] = timePassed;
+    //Each note will equal to the peak of the photocell plus the frequency of the photocell
+    notes[countNotes] = peak + offsetFrequency;
+    //Increment each time the function is called
+    countNotes++;
+    //reset the timer and peak per button press.
     timePassed = 0;
-  peak = 0;
-    
+    peak = 0;
+    //once we are no longer pressing the button we set it back to false. 
     activeNoteButton = false;
-   
-    
+
+
   }
 
 }
@@ -495,6 +491,8 @@ void updateArraysWithNoteAndTimings()
 **************************************************************************/
 int getPhotoFrequency()
 {
+  //we read the frequency of the photocell
+  //since we want to start at 0, we subtract the reading of the photocell by the maximum frequency it could obtain
   activeFrequency = analogRead(PHOTO_PIN);
   activeFrequency = 1023 - activeFrequency;
 
@@ -507,6 +505,7 @@ int getPhotoFrequency()
 **************************************************************************/
 int getRunningAverage()
 {
+  //Get the running average of the photcell and return it to getphotofrequency()
   int rawSenseVal = analogRead(PHOTO_PIN);
   runningAverageBuffer[nextCount] = rawSenseVal;
   nextCount++;
@@ -546,14 +545,15 @@ void colorLED(int col)
 void playWithDuration()
 {
 
-  //IMPLEMENT
+  //loop through the notes stored
+  //play each note with its respective duration
   for (int i = 0; i < countNotes; i++) {
     tone(BUZZER_PIN, notes[i], durations[i]);
-    delay(durations[i]+5); // wait for tone to finish
-    //check if mode button is pressed
+    delay(durations[i] + 5); // wait for tone to finish
+    //change the color depending on the photcell frequency by mapping it to the led
     int col = map(activeFrequency, 0, 1023, 0, 255);
-  analogWrite(LED_PIN_G, col);   // Turn on the LED -G
-  if (digitalRead(BUTTON_MODE_PIN) == HIGH) {
+    analogWrite(LED_PIN_G, col);   // Turn on the LED -G
+    if (digitalRead(BUTTON_MODE_PIN) == HIGH) {
       break;
     }
   }
