@@ -2,6 +2,7 @@
 
 #include <Wire.h>
 #include <SPI.h>
+
 #include <Adafruit_Sensor.h>
 #include <Adafruit_BME280.h>
 #include <TinyGPS.h>
@@ -24,8 +25,9 @@ int DEG;
 int MIN1;
 int MIN2;
 // Include the ESP8266 AT library:
-#include <SparkFunESP8266WiFi.h>
 
+#include <SparkFunESP8266WiFi.h>
+#define photoPin A0
 #define BME_SCK A5
 //#define BME_MISO 12
 #define BME_MOSI A4
@@ -39,11 +41,17 @@ Adafruit_BME280 bme; // I2C
 
 unsigned long delayTime;
 
+#define RUNNING_SAMPLES 16
+int activeFrequency = 0;
+int offsetFrequency = 0;
+int runningAverageBuffer[RUNNING_SAMPLES];
+int nextCount;
+
 //////////////////////////////
 // WiFi Network Definitions //
 //////////////////////////////
-const char mySSID[] = "VIDEOTRON8010";
-const char myPSK[] = "VTYFFR4MUVVH3";
+const char mySSID[] = "ConcordiaGuest";
+const char myPSK[] = "";
 
 /////////////////////
 // HTTP HEADER
@@ -128,6 +136,7 @@ void loop() {
     // getReq();
     //delay(5000);
     post();
+    serverDemo();
     Serial.println("posted");
     //delay(10000);
     //serverDemo();
@@ -175,7 +184,7 @@ void post()
  // params += "locations" + String(bme.readPressure() / 100.0F) + "&";
   params += "$keywords" + String(bme.readAltitude(SEALEVELPRESSURE_HPA)) + "&";
  // params += "tTravel" + String(bme.readHumidity()) + "&";
-  params += "$lOrD" + String("light")+"&";
+  params += "$lOrD" + String(getPhotoFrequency())+"&";
   params += "$geolocations " + String(lat,lon);
 
   Serial.println(("Attempting to Post!"));
@@ -187,12 +196,106 @@ void post()
   // available() will return the number of characters
   // currently in the receive buffer.
   while (client.available())
-    Serial.write(client.read()); // read() gets the FIFO char
+    Serial.print(client.read()); // read() gets the FIFO char
     // connected() is a boolean return value - 1 if the
     // connection is active, 0 if it's closed.
     if (client.connected())
       client.stop(); // stop() closes a TCP connection.
     }
+
+    void serverDemo()
+{
+  // available() is an ESP8266Server function which will
+  // return an ESP8266Client object for printing and reading.
+  // available() has one parameter -- a timeout value. This
+  // is the number of milliseconds the function waits,
+  // checking for a connection.
+  ESP8266Client client = server.available(500);
+  
+  if (client) 
+  {
+    Serial.println(F("Client Connected!"));
+    // an http request ends with a blank line
+    boolean currentLineIsBlank = true;
+    while (client.connected()) 
+    {
+      if (client.available()) 
+      {
+        char c = client.read();
+        // if you've gotten to the end of the line (received a newline
+        // character) and the line is blank, the http request has ended,
+        // so you can send a reply
+        if (c == '\n' && currentLineIsBlank) 
+        {
+          Serial.println(F("Sending HTML page"));
+          // send a standard http response header:
+          client.print(htmlHeader);
+          String htmlBody;
+          // output the value of each analog input pin
+          for (int a = 0; a < 6; a++)
+          {
+            htmlBody += "A";
+            htmlBody += String(a);
+            htmlBody += ": ";
+            htmlBody += String(analogRead(a));
+            htmlBody += "<br>\n";
+          }
+          htmlBody += "</html>\n";
+          client.print(htmlBody);
+          break;
+        }
+        if (c == '\n') 
+        {
+          // you're starting a new line
+          currentLineIsBlank = true;
+        }
+        else if (c != '\r') 
+        {
+          // you've gotten a character on the current line
+          currentLineIsBlank = false;
+        }
+      }
+    }
+    // give the web browser time to receive the data
+    delay(1);
+   
+    // close the connection:
+    client.stop();
+    Serial.println(F("Client disconnected"));
+  }
+  
+}
+
+int photoPinAv() {
+  //Get the running average of the photcell and return it to getphotofrequency()
+  int rawSenseVal = analogRead(photoPin);
+  runningAverageBuffer[nextCount] = rawSenseVal;
+  nextCount++;
+  if (nextCount >= RUNNING_SAMPLES) {
+    nextCount = 0;
+  }
+  int currentSum = 0;
+  for (int i = 0; i < RUNNING_SAMPLES; i++) {
+    currentSum += runningAverageBuffer[i];
+  }
+  int averageVal = currentSum / RUNNING_SAMPLES;
+  delay(100);
+  return getPhotoFrequency();
+}
+
+int getPhotoFrequency()
+{
+  bool photobool;
+  //we read the frequency of the photocell
+  //since we want to start at 0, we subtract the reading of the photocell by the maximum frequency it could obtain
+  activeFrequency = analogRead(photoPin);
+  activeFrequency = 1023 - activeFrequency;
+  offsetFrequency = getPhotoFrequency();
+  if (offsetFrequency > 10) {
+    photobool = true;
+  }
+}
+
 
 void printValues() {
   Serial.print("Temperature = ");
